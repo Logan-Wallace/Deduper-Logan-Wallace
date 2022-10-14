@@ -1,0 +1,62 @@
+--------------------------
+Lab Notebook for "Deduper" 
+--------------------------
+Logan Wallace
+10/12/22
+
+Goal - To write a reference based PCR duplicate removal tool. 
+If we have a sorted SAM file with uniquely mapped reads, remove 
+all PCR duplicates (leave only a single copy of each read).
+
+Review - What's in a SAM file?
+    Sequence Alignment Map (format)
+    May or may not have a header section starting with an '@'
+    Basically a SAM aligner can take in a fastq file as input and 
+    return a SAM file with the reads mapped to regions of the 
+    genome. 
+Things that we are concerned about for this exercise
+    Fields - 
+    1. QNAME; unique identifier for each read
+    2. FLAG; Lot's of information in here but we are specifically 
+    concerned with decimal 16 or the 4th bit which tells us about 
+    the read alignment direction. (Whether or not it is a reverse 
+    complement)
+    3. RNAME; which contig within the reference genome does the read align.
+    4. POS; the leftmost mapping position of the first base within the read.
+    Combined with the reference name, these comprise the genomic coordinates.
+    6. CIGAR; A sequence of numbers and letters that tells us about 
+    continuities or discontinuities within the alignment.
+    10. SEQ; the sequence of the read
+
+STL96.txt contains 96 8-mers (UMIs) unique molecular identifiers.
+
+What is a PCR duplicate going to look like within our SAM file?
+    Same alignment position
+        Same chromosome (col3), position (col4), strand (col2)
+    Soft clipping - The CIGAR (col6) string can tell us if clipping has occurred (we should write a function to interpret the new read mapping position if clipping has occurred). Soft clipping is going to be represented in the CIGAR string by an "S" preceded by some number. 
+    Same unique molecular index (UMI) randomer (col1)
+To reiterate, what columns do we care about
+    1, 2, 3, 4 and 6. 
+
+Part 1 - Pseudocode 
+
+Define the problem:
+We have reads that are duplicates from PCR and these might interfere
+with our ability assess RNAseq data and perform other quantifications.
+We want to remove them from the SAM file and output a properly formatted SAM file that has been deduplicated. 
+
+Write Examples:
+    - A properly formatted input SAM file
+    - A properly formated expected output SAM file
+
+Develop your algorithm with pseudocode:
+
+Determine high level functions:
+    - Description
+    - Function headers
+    - Test examples
+    - Return statement
+
+
+
+Wrote "deduper_pseudo"

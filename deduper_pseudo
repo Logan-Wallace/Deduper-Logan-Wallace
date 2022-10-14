@@ -1,0 +1,97 @@
+- Psuedocode for Deduper -
+
+Logan Wallace
+10/12/22
+Bi624
+
+-------------------
+What's the problem?
+-------------------
+Following sequencing and alignment of reads to a reference genome we are given a SAM file
+but we want to be assured prior to performing any analysis that we have removed potential 
+duplicates from PCR. We need to parse through our SAM file and remove any duplicates,
+leaving only a single copy of each read. This can be done by
+checking each read from our SAM file to see if the read is 
+mapped to the same strand, in the same location and with the
+same unique molecular identifier (UMI). 
+
+--------------
+Put succinctly
+--------------
+1. Open our files and read in our 96 UMI's from "STL96.txt"
+    A. For lines in file
+    B. Each UMI is a line, store it into a dictionary
+2. Write a loop to run through the SAM file
+    A. For lines in file
+    B. If(header): If(EMPTY): Else(Sequence Line):
+    C. Collect information about the read that is stored within the separated
+    values within the string including; FLAG(col2(bit4)), CHROM(col3), POS(col4)
+    CIGAR(col6)
+3. Use functions (see below) to determine;
+    A. cigar_reader; if the mapping position needs to be updated
+    B. rev_comp; if the read maps to the forward or reverse strand
+4. Check each read line and determine if it is a duplicate
+    A. Does the UMI match?
+    B. Is it on the same strand?
+    C. Is the chromosome the same?
+    D. Does the mapping position match?
+5. If it is determined to be a duplicate based on shared
+UMI and location, throw it out. (Do not write out to our new CSV file)
+6. If it is not determined to be a duplicate, write it out
+to our new "deduplicated" SAM file.
+
+
+---------
+Functions
+---------
+
+def cigar_reader(str) -> int:
+    '''The purpose of this function is to take in a CIGAR
+    string and return an integer value on how to adjust the
+    mapping position of a read'''
+    return(adjust)
+
+def rev_comp(str) -> boolean:
+    '''The purpose of this function is to read a string and 
+    determine if the read belonging to the string is mapped 
+    to the forward or reverse strand'''
+    return(TRUE/FALSE)
+
+
+
+
+------------------------------
+Review - What's in a SAM file?
+------------------------------
+    Sequence Alignment Map (format)
+    May or may not have a header section starting with an '@'
+    Basically a SAM aligner can take in a fastq file as input and 
+    return a SAM file with the reads mapped to regions of the 
+    genome. 
+Things that we are concerned about for this exercise
+    Fields - 
+    1. QNAME; unique identifier for each read
+    2. FLAG; Lot's of information in here but we are specifically 
+    concerned with decimal 16 or the 4th bit which tells us about 
+    the read alignment direction. (Whether or not it is a reverse 
+    complement)
+    3. RNAME; which contig within the reference genome does the read align.
+    4. POS; the leftmost mapping position of the first base within the read.
+    Combined with the reference name, these comprise the genomic coordinates.
+    6. CIGAR; A sequence of numbers and letters that tells us about 
+    continuities or discontinuities within the alignment.
+    10. SEQ; the sequence of the read
+
+STL96.txt contains 96 8-mers (UMIs) unique molecular identifiers.
+
+What is a PCR duplicate going to look like within our SAM file?
+    Same alignment position
+        Same chromosome (col3), position (col4), strand (col2)
+    Soft clipping - The CIGAR (col6) string can tell us if clipping has occurred (we should write a function to interpret the new read mapping position if clipping has occurred). Soft clipping is going to be represented in the CIGAR string by an "S" preceded by some number. 
+    Same unique molecular index (UMI) randomer (col1)
+To reiterate, what columns do we care about
+    1, 2, 3, 4 and 6. 
+
+
+See "Lab_Notebook_Deduper" in this repo for more background on SAM file format.
+
